@@ -66,22 +66,11 @@
         android:text="Options"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
-    <<!-- ExpandableListView
-        android:id="@+id/expandl"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/expbutton1"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/popupbutton"
-        android:adjustViewBounds="true"
-        android:gravity="right" >
-
-    </ExpandableListView> -->
 
 	<ListView
 	    android:id="@+id/listview"
 	    android:layout_width="wrap_content" 
-	    android:layout_heigth="mach_parent"
+	    android:layout_height="match_parent"
 	    android:layout_above="@+id/expbutton1"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/popupbutton"

@@ -13,7 +13,7 @@ public class MachineSQLiteHelper extends SQLiteOpenHelper {
 	//CHANGE THESE IF CHANGED MACHINE CLASS
 	public static final String[] COLUMN_NAMES = {	"Name", "List", "ModelYear", "LastGrease",
 													"LastMaintenance", "Color", "FilterInfo"};
-	public static final String[] COLUMN_TYPES = {	"text not null", "integer", "integer", "integer",
+	public static final String[] COLUMN_TYPES = {	"text not null", "text", "integer", "integer",
 													"integer", "text", "text"};
 	public static final int COLUMN_NUMBER = 7;
 

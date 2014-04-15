@@ -32,12 +32,12 @@ int id dropdown 0x7f040010
 int id edittext 0x7f040003
 int id edittextc 0x7f04000b
 int id edittextg 0x7f04000c
-int id expandl 0x7f040017
 int id expbutton1 0x7f040015
 int id expbutton2 0x7f040016
 int id hListView1 0x7f040005
 int id laptop 0x7f040009
 int id laptopg 0x7f04000d
+int id listview 0x7f040017
 int id normal 0x7f040001
 int id pop 0x7f04000e
 int id popupbutton 0x7f040014

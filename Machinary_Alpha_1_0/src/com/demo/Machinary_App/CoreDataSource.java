@@ -12,11 +12,11 @@ public class CoreDataSource {
 
 	// Database fields
 	public SQLiteDatabase databaseMachine;
-	private SQLiteDatabase databaseList;
-	private SQLiteDatabase databasePicture;
+	public SQLiteDatabase databaseList;
+	public SQLiteDatabase databasePicture;
 	public MachineSQLiteHelper dbMHelper;
-	private ListSQLiteHelper dbLHelper;
-	private PictureSQLiteHelper dbPHelper;
+	public ListSQLiteHelper dbLHelper;
+	public PictureSQLiteHelper dbPHelper;
 
 	public CoreDataSource(Context context) {
 		dbMHelper = new MachineSQLiteHelper(context);
@@ -41,7 +41,7 @@ public class CoreDataSource {
 		Machine machine = new Machine(
 	    		Long.parseLong(cursor.getString(0)),
 	            cursor.getString(1), 
-	            Long.parseLong(cursor.getString(2)), 
+	            cursor.getString(2), 
 	            Integer.parseInt(cursor.getString(3)), 
 	            Integer.parseInt(cursor.getString(4)),
 	            Integer.parseInt(cursor.getString(5)),
@@ -53,7 +53,7 @@ public class CoreDataSource {
 	public ContentValues getMachineContent(Machine machine){
 		ContentValues values = new ContentValues();
 	    values.put(dbMHelper.COLUMN_NAMES[0], machine.getName()); // Machine Name
-	    values.put(dbMHelper.COLUMN_NAMES[1], machine.getList()); // Machine List Number
+	    values.put(dbMHelper.COLUMN_NAMES[1], machine.getList()); // Machine List Name
 	    values.put(dbMHelper.COLUMN_NAMES[2], machine.getYear()); // Machine Modal Year
 	    values.put(dbMHelper.COLUMN_NAMES[3], machine.getLastGrease()); // Machine Last Grease
 	    values.put(dbMHelper.COLUMN_NAMES[4], machine.getLastMaintenance()); // Machine Last Maintenance
@@ -177,12 +177,13 @@ public class CoreDataSource {
 
 	// Getting single list
 	public List2 getList(int id) {
-	    Cursor cursor = databaseList.query(
+	    /*Cursor cursor = databaseList.query(
 	    		dbLHelper.TABLE_NAME,
 	    		dbLHelper.ALL_COLUMNS, 
 	    		dbLHelper.COLUMN_ID + "=?",
 	            new String[] { String.valueOf(id) }, 
-	            null, null, null, null);
+	            null, null, null, null);*/
+		Cursor cursor = databaseList.rawQuery("SELECT * FROM "+dbLHelper.TABLE_NAME+" WHERE "+dbLHelper.COLUMN_ID+" = "+id, null);
 	    if (cursor != null)
 	        cursor.moveToFirst();
 

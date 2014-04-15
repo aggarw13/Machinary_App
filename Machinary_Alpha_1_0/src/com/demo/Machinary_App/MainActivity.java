@@ -54,7 +54,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 //import ExpandableListAdapter.ViewHolder;
 //Thumbnalils.UTIl
-//Extract Thumbnail
+
 
 @TargetApi(11)
 public class MainActivity extends Activity implements OnClickListener, OnItemClickListener {
@@ -72,28 +72,15 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 	List<List<String>> cardlist;
 	public Filter expfilter;
 	
+
 	Button[] mButtonexp = {null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,};
 	TestAdapter mAdapter;
-	ExpandableListAdapter[] mSAdapters = {null, null, null, null, null, null, null, null, null, null};// this is temporary and BAD CODE
+	ListViewListAdapter[] mSAdapters = {null, null, null, null, null, null, null, null, null, null};// this is temporary and BAD CODE
 	List<HashMap<String, List<String>>> collection;// =  new LinkedHashMap<String, List<String>>();
 	//Trello-like card strings
-	String[] typestring = new String[] {"OS Types", "Dog Breeds", "Random Stuff", "Catagory 4", "Catagory 5"};
-	String[][] cardstring = new String[][] { {"Android", "iPhone", "WindowsMobile",
-		"Blackberry", "WebOS", "Ubuntu", "Max OS X", "Linux", "Ubuntu",
-		"Windows7", "OS/2", "Ubuntu", "Other", "SUN Microsystem", "Dell", "Lorem", "Ipsum"},
-		{"Husky", "Dalmation", "Pit Bull"}, {"Foo", "Bar", "Bip"}, {"Empty"}, {"Empty"} };
-	
-	String[] hpModels = { "HP Pavilion G6-2014TX", "ProBook HP 4540",
-    "HP Envy 4-1025TX" };
-	String[] hclModels = { "HCL S2101", "HCL L2102", "HCL V2002" };
-	String[] lenovoModels = { "IdeaPad Z Series", "Essential G Series",
-    "ThinkPad X Series", "Ideapad Z Series" };
-	String[] sonyModels = { "VAIO E Series", "VAIO Z Series",
-    "VAIO S Series", "VAIO YB Series" };
-	String[] dellModels = { "Inspiron", "Vostro", "XPS" };
-	String[] samsungModels = { "NP Series", "Series 5", "SF Series" };
+	String[] typestring = new String[] {"MachineType1", "MachineType2", "MachineType3", "MachineType4"};
+	List<List2> machlist = new ArrayList<List2>();
 
-	
 	@Override
 	protected void onCreate( Bundle savedInstanceState ) {
 		super.onCreate( savedInstanceState );
@@ -101,18 +88,25 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 		setContentView( R.layout.activity_main );
 		datasource = new CoreDataSource(this);
 		datasource.open();
-		//atasource.databaseMachine.delete()(datasource.databaseMachine,null,1);
+		datasource.databaseMachine.execSQL("DROP TABLE IF EXISTS "+ datasource.dbMHelper.TABLE_NAME);
+		datasource.dbMHelper.onCreate(datasource.databaseMachine);
+		datasource.databaseList.execSQL("DROP TABLE IF EXISTS "+datasource.dbLHelper.TABLE_NAME);
+		datasource.dbLHelper.onCreate(datasource.databaseList);
 		datasource.databaseMachine.execSQL("Delete From "+datasource.dbMHelper.TABLE_NAME);
+		datasource.databaseList.execSQL("Delete From "+datasource.dbLHelper.TABLE_NAME);
+		//datasource.databaseMachine.delete()(datasource.databaseMachine,null,1);
+		//datasource.databaseMachine.execSQL("Delete From "+datasource.dbMHelper.TABLE_NAME);
 		//datasource.databaseMachine.rawQuery("Delete From "+datasource.dbMHelper.TABLE_NAME, null);
 		items = new ArrayList<String>();
 		for( int i = 0; i < typestring.length; i++ ) {
+			List2 mlist = new List2(i,typestring[i],"Machine");
+			datasource.addList(mlist);
 			items.add( typestring[i] );
 		}
 		
-		String[][] laptops = new String[][]{ { "HP Pavilion G6-2014TX", "ProBook HP 4540",
-	    "HP Envy 4-1025TX", "A", "B", "C", "D" ,"C", "E", "F", "G", "H", "I", "J", "K", "L","M" }, { "HCL S2101", "HCL L2102", "HCL V2002" }, { "IdeaPad Z Series", "Essential G Series",
-	        "ThinkPad X Series", "Ideapad Z Series" }, { "HCL S2101", "HCL L2102", "HCL V2002" }, { "Inspiron", "Vostro", "XPS" }};
 		
+		String[][] machineinfo = new String[][]{ { "Hydraulic (big): CNH Ultra 84372057", "MachineType1","2008"
+	     }, { "Oil: CNH 504192850", "MachineType2", "2012"}, { "Oil: Manutou J608773", "MachineType3", "2011" }, {"Hub cap: SKF 1743", "MachineType4", "2013"}};
 	
 		
 		/*TextView view = new TextView(this);
@@ -125,7 +119,7 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 
 		popoup.update();*/
 		
-		collection = new ArrayList<HashMap<String, List<String>>>();
+		/*collection = new ArrayList<HashMap<String, List<String>>>();
 		for (int j = 0; j < items.size(); j++){
 				HashMap<String, List<String>> collect = new LinkedHashMap<String, List<String>>();
 				for(int k = 0; k < cardstring[j].length; k++ ){
@@ -134,26 +128,25 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 					collect.put(cardstring[j][k],l);
 				}
 				collection.add(collect);
- 		}
+ 		}*/
 		
-		cardlist = new ArrayList<List<String>>();
+		String cardstring[] = {"2008 STX 450 Quadtrack", "2012 Case 450 Quadtrack","H & Silage","2012 Manitou Telehandler"};
+		
 		for (int i = 0; i < cardstring.length; i++) {
-			List<String> listy = new ArrayList<String>();
-			for (int j = 0; j < cardstring[i].length; j++) {
-				Machine machine =  new Machine(j + i + 1,cardstring[i][j],i,0,0,0,collection.get(i).get(cardstring[i][j]).get(0));
+				Machine machine =  new Machine(i, cardstring[i], typestring[i], Integer.parseInt(machineinfo[i][2]),0,0,machineinfo[i][0]);
 				datasource.addMachine(machine);
-				listy.add(cardstring[i][j]);
 			}
-			cardlist.add(listy);
 			Log.w(LOG_TAG,"Database Size = " + datasource.databaseMachine.rawQuery("SELECT * FROM " + datasource.dbMHelper.TABLE_NAME, null).getCount());
-			
-		}
+			Cursor cursor = datasource.databaseList.rawQuery("SELECT * FROM " + datasource.dbLHelper.TABLE_NAME, null);
+			cursor.moveToFirst();
+			Log.w(LOG_TAG,"Column Id  = " + cursor.getString(0));
+			//Cursor mcursor = datasource.databaseMachine.rawQuery("SELECT "+datasource.dbMHelper.COLUMN_NAMES[0]+" FROM "+datasource.dbMHelper.TABLE_NAME+" WHERE "+datasource.dbMHelper.COLUMN_NAMES[1]+" = "+ typestring[0], null);
 	/*	for(int i = 0; i < cardstring.length; i++ ){
 			collection[i] = new LinkedHashMap<String, List<String>>();
 			for(int k = 0; k < cardstring[i].length; k++){
 				collection[i].put(cardstring[i][k], laptops[])*/
 		
-		mAdapter = new TestAdapter( this, R.layout.test_item_1, android.R.id.text1, R.id.expandl, items, collection, cardlist, null);
+		mAdapter = new TestAdapter( this, R.layout.test_item_1, android.R.id.text1, R.id.listview, datasource, items);
 		listView.setHeaderDividersEnabled( true );
 		listView.setFooterDividersEnabled( true );
 		
@@ -181,7 +174,7 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 					
 					final int itemId = item.getItemId();
 					if( itemId == 0 ) {
-						deleteSelectedItems();
+						//deleteSelectedItems();
 					}
 					
 					mode.finish();
@@ -222,8 +215,7 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 	TextWatcher watcher = new TextWatcher() {
 
         @Override
-        public void onTextChanged(CharSequence cs, int arg1, int arg2,
-                int arg3) {
+        public void onTextChanged(CharSequence cs, int arg1, int arg2,int arg3) {
             // ((Filter) listAdapter.getFilter()).filter(cs);
            //MainActivity.mAdapter.getFilter().filter(cs.toString());
         	MainActivity.this.mAdapter.getFilter().filter(cs.toString());
@@ -243,26 +235,48 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 	};
 	
 	public class expFilter extends Filter{
-		List<String> mItems = new ArrayList<String>(); 
+		/*List<String> mItems = new ArrayList<String>(); 
     	List<List<String>> group = new ArrayList<List<String>>();
-    	List<List<Integer>> expanded = new ArrayList<List<Integer>>();
+    	List<List<Integer>> expanded = new ArrayList<List<Integer>>();*/
+		CoreDataSource data;
 	    	@Override
 			protected FilterResults performFiltering(CharSequence arg0) {
+	    		data = new CoreDataSource(MainActivity.this);
+	    		this.data.open();
+	    		data.databaseMachine.execSQL("DROP TBLE IF EXISTS "+ data.dbMHelper.TABLE_NAME);
 				FilterResults results1 = new FilterResults(); 
 				FilterResults results2 = new FilterResults(); 
 				if(arg0 == null | arg0.length() == 0){
-						group = cardlist;
+						/*group = cardlist;
 				        results1.values = collection;
-				        mItems = items;
+				        mItems = items;*/
+				        data = MainActivity.this.datasource;
+				        results1.values = data;
 				    }
 				    else {
-				        // We perform filtering operation
+				    	List<Machine> mlist = new ArrayList<Machine>(); 
+				    	mlist = MainActivity.this.datasource.getAllMachines();
+				    	//Log.w(LOG_TAG,"Searchdatabase size = "+ mlist.size());
+				        for(int i = 0; i < mlist.size(); i++){
+				        	if(mlist.get(i).getName().toUpperCase().startsWith(((String) arg0).toUpperCase())){
+				        		//Log.w(LOG_TAG,"Searchdatabase size = "+ mlist.size());
+				        		data.addMachine(mlist.get(i));
+				        		//Log.w(LOG_TAG,"Searchdatabase size = "+ data.databaseMachine.rawQuery("SELECT * FROM "+data.dbMHelper.TABLE_NAME,null).getCount());
+				        		if(data.databaseMachine.rawQuery("SELECT * FROM "+data.dbMHelper.TABLE_NAME+ " WHERE "+data.dbMHelper.COLUMN_NAMES[1]+" = '"+mlist.get(i).getList()+"'", null).getCount() == 0)
+				        			data.addList(new List2(0,mlist.get(i).getList(),"Machine"));}
+				        }
+				        results1.values = data;
+				    }
+				return results1;
+	    	}
+				 
+				/*        // We perform filtering operation
 				        List<HashMap<String,List<String>>> ncollectionList = new ArrayList<HashMap<String,List<String>>>();
 				        List<List<String>> grp = new ArrayList<List<String>>();
 				        List<String> Items = new ArrayList<String>();
 				        List<List<Integer>> expinterim = new ArrayList<List<Integer>>();
 				        //for (HashMap<String, List<String>> M : MainActivity.collection) {
-				        for(int i = 0; i < collection.size(); i++){
+
 				        	HashMap<String,List<String>> interim = new LinkedHashMap<String,List<String>>();
 				        	List<String> list = new ArrayList<String>();
 					        List<Integer> listexpand = new ArrayList<Integer>();
@@ -289,20 +303,20 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 				        		}
 				        	    //and to get value
 				        	if (interim.size() == 0){
-				        		/*List<String> l = new ArrayList<String>();
+				        		List<String> l = new ArrayList<String>();
 				        		l.add("Empty");
 				        		interim.put("Empty",l);
 				        		ncollectionList.add(interim);
-				        		grp.add(l);*/
+				        		grp.add(l);
 				        	}
 				        	else
 				        	{
-				        		/*if(items.get(i).toUpperCase().startsWith(((String) arg0).toUpperCase())){
+				        		if(items.get(i).toUpperCase().startsWith(((String) arg0).toUpperCase())){
 				        			Items.add(items.get(i));
 					        		grp.add(group.get(i));
 					        		ncollectionList.add(collection.get(i));
 					        		expinterim.add(null);
-				        		}*/
+				        		}
 				        		//else{
 				        		Items.add(items.get(i));
 				        		grp.add(list);
@@ -318,27 +332,32 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 				        expanded = expinterim;
 				    }
 				    return results1;}
-
+*/
 			@Override
 			protected void publishResults(CharSequence arg0,
 					FilterResults arg1) {
-				if((List<HashMap<String,List<String>>>)arg1.values == collection){
-				//if(arg0 == null |arg0.length() == 0){
-					mAdapter.mCards = (List<HashMap<String,List<String>>>)arg1.values ;
+				data = new CoreDataSource(MainActivity.this);
+				this.data.open();
+				//Log.w(LOG_TAG,"Searchdatabase size = "+ data.databaseMachine.rawQuery("SELECT * FROM "+data.dbMHelper.TABLE_NAME, null).getCount());
+				if(data.getMachinesCount() == MainActivity.this.datasource.getMachinesCount()){
+					/*mAdapter.mCards = (List<HashMap<String,List<String>>>)arg1.values ;
 					mAdapter.groups = group;
 					mAdapter.mItems = mItems;
 					mAdapter.expand = null;
-					expanded = null;
-					//mAdapter.notifyDataSetChanged();
+					expanded = null;*/
+					mAdapter.data = MainActivity.this.datasource;
+					mAdapter.notifyDataSetChanged();
 				}else
 				{
-					mAdapter.mCards = (List<HashMap<String,List<String>>>) arg1.values;
+					/*mAdapter.mCards = (List<HashMap<String,List<String>>>) arg1.values;
 					mAdapter.groups = group;
 					mAdapter.mItems = mItems;
-					mAdapter.expand = expanded;
+					mAdapter.expand = expanded;*/
+					mAdapter.data = data;
+					mAdapter.notifyDataSetChanged();
 				}
-				mAdapter = new TestAdapter(MainActivity.this, R.layout.test_item_1, android.R.id.text1, R.id.expandl, mItems, (List<HashMap<String,List<String>>>)arg1.values, group, expanded);
-				listView.setAdapter( mAdapter );
+				//mAdapter = new TestAdapter(MainActivity.this, R.layout.test_item_1, android.R.id.text1, R.id.listview, mItems, (List<HashMap<String,List<String>>>)arg1.values, group, expanded);
+				//listView.setAdapter( mAdapter );
 				// TODO Auto-generated method stub
 			}
 	}
@@ -347,7 +366,7 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 		final int id = v.getId();
 		
 		if( id == mButton1.getId() ) {
-			addElements();
+			//addElements();
 		} else if( id == mButton2.getId() ) {
 			removeElements();
 		} else if( id == mButton3.getId() ) {
@@ -358,16 +377,7 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 			removeGroup(1);
 		}
 	}	
-	
-/*	public void searchexplist(){
-		String input = mEdit.getText().toString();
-		List<List<String>> sgroups = new ArrayList<List<String>>();
-		List<String> sitems = new ArrayList<String>();
-		List<HashMap<String,List<String>>> scollection = new ArrayList<HashMap<String,List<String>>>();
-		for(int j = 0; j < collection.size(); j++){
-				
-	}*/
-		
+
 	
 	View.OnClickListener handler1 = new View.OnClickListener(){
 		@Override
@@ -375,9 +385,7 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 			final Object argTag = arg0.getTag();
 			int i = Integer.parseInt(argTag.toString().replace("tag",""));
 			if(i % 2 == 0 ){
-				// addgroup = (EditText)findViewById(R.id.addcard);
-				//String machine = addgroup.getText().toString();
-				addGroup(i / 2, arg0);// machine);
+				addGroup(i / 2, arg0);
 			}
 			else{
 				removeGroup((i - 1) / 2);
@@ -388,9 +396,21 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 	private void removeGroup(int category) {
 		//mAdapter.mCards.get(category).remove(mAdapter.groups.get(category).size() - 1);
 		//mAdapter.groups.get(category).remove(mAdapter.groups.get(category).size() - 1);
-		String group = MainActivity.this.cardlist.get(category).get(MainActivity.this.cardlist.get(category).size() - 1);
-		MainActivity.this.cardlist.get(category).remove(MainActivity.this.cardlist.get(category).size() - 1);
-		MainActivity.this.collection.get(category).remove(group);
+		CoreDataSource cds =  MainActivity.this.datasource;
+		String query = "SELECT * FROM "+MainActivity.this.datasource.dbMHelper.TABLE_NAME+" WHERE "+cds.dbMHelper.COLUMN_NAMES[1]+ " = '"+cds.getList(category + 1).getName()+"'"; 
+		int count = cds.databaseMachine.rawQuery(query,null).getCount();
+		Cursor cursor = cds.databaseMachine.rawQuery(query,null);
+		cursor.moveToLast();
+		if(cds.databaseMachine.rawQuery(query,null).getCount() != 0){
+			cds.deleteMachine(cds.cursor2Machine(cursor));
+			mAdapter.data = cds;
+			mAdapter.notifyDataSetChanged();
+			//cds.databaseMachine.delete(cds.dbMHelper.TABLE_NAME, cds.dbMHelper.COLUMN_ID[0] + " = ",cds.databaseMachine.rawQuery(query,null).moveToLast().);
+		}
+		
+		//String group = MainActivity.this.cardlist.get(category).get(MainActivity.this.cardlist.get(category).size() - 1);
+		//MainActivity.this.cardlist.get(category).remove(MainActivity.this.cardlist.get(category).size() - 1);
+		//MainActivity.this.collection.get(category).remove(group);
 		//mAdapter = new TestAdapter(MainActivity.this, R.layout.test_item_1, android.R.id.text1, R.id.expandl, mItems, (List<HashMap<String,List<String>>>)arg1.values, group, expanded);
 		mAdapter.notifyDataSetChanged();	
 		
@@ -401,13 +421,13 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 	}
 	
 	public void addGroup(int category, View expview){//,String machine){
-		List<String> list = new ArrayList<String>();
-		list.add("Info");
-		int index = ((Integer)MainActivity.this.items.indexOf(mAdapter.mItems.get(category)));
-		int listsize = MainActivity.this.cardlist.get(index).size() + 1;
-		if(index != category){
+		//List<String> list = new ArrayList<String>();
+		//list.add("Info");
+		/*int index = ((Integer)MainActivity.this.items.indexOf(mAdapter.mtypes.get(category)));
+		int listsize = MainActivity.this.cardlist.get(index).size() + 1;*/
+		/*if(index != category){
 			mAdapter.groups.get(category).add("Random" + String.valueOf(listsize));
-			mAdapter.mCards.get(category).put("Random" + String.valueOf(listsize), list);}
+			mAdapter.mCards.get(category).put("Random" + String.valueOf(listsize), list);}*/
 		//category = index;
 		/*String newgroup = mSAdapters[category].addcard(expview);
 		List<String> list = new ArrayList<String>();
@@ -416,36 +436,54 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 		MainActivity.this.collection.get(category).put(newgroup, list);*/
 		//mAdapter.mCards.get(category).put("Random" + String.valueOf(mAdapter.groups.get(category).size()), list);
 		//mAdapter.groups.get(category).add("Random" + String.valueOf(mAdapter.groups.get(category).size()));
-		if(mAdapter.expand != null)
+		/*if(mAdapter.expand != null)
 			mAdapter.expand.get(category).add(0);
+		mAdapter.notifyDataSetChanged();*/
+		String Query = "SELECT * FROM "+ MainActivity.this.datasource.dbMHelper.TABLE_NAME;
+		Cursor cursor = MainActivity.this.datasource.databaseMachine.rawQuery(Query, null);
+//Log.w(LOG_Tag)
+		Machine nmach = new Machine(cursor.getCount() + 1, "New machine", MainActivity.this.datasource.getList(category + 1).getName(),2014,0,0,"No info");
+		MainActivity.this.datasource.addMachine(nmach);
+		mAdapter.data = MainActivity.this.datasource;
 		mAdapter.notifyDataSetChanged();
-		MainActivity.this.cardlist.get(index).add("Random" + String.valueOf(listsize));
-		MainActivity.this.collection.get(index).put("Random" + String.valueOf(listsize), list);
+		//MainActivity.this.cardlist.get(index).add("Random" + String.valueOf(listsize));
+		//MainActivity.this.collection.get(index).put("Random" + String.valueOf(listsize), list);
 		//String group = MainActivity.this.cardlist.get(category).get(MainActivity.this.cardlist.get(category).size() - 1);
 	}
 	
 	private void addElements() {
-		HashMap<String,List<String>> list = new LinkedHashMap<String,List<String>>();
+		/*HashMap<String,List<String>> list = new LinkedHashMap<String,List<String>>();
 		List<String> l = new ArrayList<String>();
 		l.add("empty");
 		list.put(l.get(0), l);
 		mAdapter.mCards.add(list);
 		mAdapter.groups.add(l);
 		mAdapter.mItems.add( "Category " + String.valueOf( mAdapter.mItems.size()+1 ) );
+		mAdapter.notifyDataSetChanged();*/
+		MainActivity.this.datasource.addList(new List2(0,"New Machine Type","Machine"));
+		mAdapter.data = MainActivity.this.datasource;
 		mAdapter.notifyDataSetChanged();
 	}
 	
+	
 	private void removeElements() {
-		if( mAdapter.mItems.size() > 0 & mAdapter.mItems.size() < 10 ) {
-			mAdapter.mItems.remove(mAdapter.mItems.size()-1);
+		CoreDataSource cds = MainActivity.this.datasource;
+		int count = cds.databaseList.rawQuery("SELECT * FROM "+ cds.dbLHelper.TABLE_NAME, null).getCount();
+		Cursor cursor =	cds.databaseList.rawQuery("SELECT * FROM "+ cds.dbLHelper.TABLE_NAME, null);
+		cursor.moveToLast();
+		if( count > 0 & count < 10 ) {
+			/*mAdapter.mItems.remove(mAdapter.mItems.size()-1);
 			mAdapter.mCards.remove(mAdapter.mItems.size());
 			mAdapter.groups.remove(mAdapter.mItems.size());
-			mSAdapters[mAdapter.mItems.size() - 1] = null;
+			mSAdapters[mAdapter.mItems.size() - 1] = null;*/
+			cds.databaseList.delete(cds.dbLHelper.TABLE_NAME, cds.dbLHelper.COLUMN_NAMES[0] + " = ?" , new String[] { String.valueOf(cursor.getString(1)) });
+			mAdapter.data = cds;
+			mAdapter.notifyDataSetChanged();
 		}
 		mAdapter.notifyDataSetChanged();
 	}
 	
-	private void deleteSelectedItems() {
+	/*private void deleteSelectedItems() {
 		SparseArrayCompat<Boolean> checkedItems = listView.getCheckedItemPositions();
 		ArrayList<Integer> sorted = new ArrayList<Integer>( checkedItems.size() );
 		
@@ -465,7 +503,7 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 			mAdapter.mItems.remove( position );
 		}
 		mAdapter.notifyDataSetChanged();
-	}
+	}*/
 	
 	@Override
 	public void onItemClick( AdapterView<?> parent, View view, int position, long id ) {
@@ -482,29 +520,32 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 		LinearLayout Popup;
 		PopupWindow explistpp;
 		List<Button> expb = new ArrayList<Button>();
-		List<String> mItems;
 		LayoutInflater mInflater;
 		int mResource;
 		int mTextResId;
 		int mListResId;
 		List<View> Views = new ArrayList<View>();
 		Context context;
-		List<List<String>> groups;
-		List<HashMap<String, List<String>>> mCards;
-		List<List<Integer>> expand;
+		CoreDataSource data;
+		List<List2> mtypes;
+		List<String> mlist;
+		//List<HashMap<String, List<String>>> mCards;
+		//List<List<Integer>> expand;
 		HListView Hlist;
-		public TestAdapter( Context context, int resourceId, int textViewResourceId, int listViewId, List<String> objects, List<HashMap<String,List<String>>> cards, List<List<String>> groups, List<List<Integer>> expandstatus)  {
-			super( context, resourceId, textViewResourceId, objects);
+		public TestAdapter( Context context, int resourceId, int textViewResourceId, int listViewId, CoreDataSource datasource, List<String> mlist)  {
+			super( context, resourceId, mlist);
 			Popup = new LinearLayout(MainActivity.this);
 			mInflater = LayoutInflater.from( context );
 			mResource = resourceId;
 			mTextResId = textViewResourceId;
 			mListResId = listViewId;
-			mItems = objects;
-			mCards = cards;
-			this.groups = groups;
+			//mItems = objects;
+			//mCards = cards;
+			//this.groups = groups;
 			this.context = context;
-			expand = expandstatus;
+			//expand = expandstatus;
+			data = datasource;
+			mtypes = data.getAllLists();
 		}
 		
 		public boolean hasStableIds() {
@@ -521,38 +562,48 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 			return 2;
 		}
 		
-		@Override
+	/*	@Override
 		public int getItemViewType( int position ) {
-			int out = position!=mItems.size() ? 1 : 2 ;
+			int out = position!=data.getListsCount() ? 1 : 2 ;
 			return out;
-		}
+		}*/
 		
 		
 		//Later: add a final column with a plus and minus buttons
 		@Override
 		public View getView( int position, View convertView, ViewGroup parent ) {
 			
-			if( null == convertView ) {
+			if(convertView  == null) {
 				convertView = mInflater.inflate( mResource, parent, false );
 			}
 			
 			TextView textView = (TextView) convertView.findViewById( mTextResId );
-			textView.setText( mItems.get(position) );
+			textView.setText(mtypes.get(position).getName());
 			textView.setTypeface(null, Typeface.BOLD);
 			options = (Button)convertView.findViewById(R.id.popupbutton);
 			Views.add(convertView);
 			convertView.setTag(position);
 			//Views.add(this.getContentView());
 			options.setTag(convertView);
-			options.setOnClickListener(listpopup);
+			//options.setOnClickListener(listpopup);
 			String tag = String.valueOf(position);
-			if(expand != null)
-				mSAdapters[position] = new ExpandableListAdapter(getContext(), R.id.laptopg, R.id.laptop, mCards.get(position), groups.get(position), position, expand.get(position));
+			/*if(expand != null)
+				mSAdapters[position] = new ListViewListAdapter(getContext(), R.id.laptopg, mCards.get(position), groups.get(position), position, expand.get(position));
 			else
-				mSAdapters[position] = new ExpandableListAdapter(getContext(), R.id.laptopg, R.id.laptop, mCards.get(position), groups.get(position), position, null);
+				mSAdapters[position] = new ListViewListAdapter(getContext(), R.id.laptopg, mCards.get(position), groups.get(position), position, null);
 			ExpandableListView expListView = (ExpandableListView)convertView.findViewById(mListResId);
-			
-			expListView.setAdapter(mSAdapters[position]);
+			*/
+			Cursor mcursor = MainActivity.this.datasource.databaseMachine.rawQuery("SELECT * FROM "+data.dbMHelper.TABLE_NAME+" WHERE "+data.dbMHelper.COLUMN_NAMES[1]+" = '"+ mtypes.get(position).getName().toString()+"'", null);
+			mcursor.moveToFirst();
+			mlist= new ArrayList<String>();
+			Log.w(LOG_TAG,"Database Size = " + mcursor.getCount());
+			for (int  i = 0; i < mcursor.getCount(); i++ ){
+				mlist.add(mcursor.getString(1));
+				mcursor.moveToNext();
+			}
+			mSAdapters[position] = new ListViewListAdapter(getContext(), R.id.laptopg, data, mListResId, position, mlist) ;
+			ListView  lv = (ListView)convertView.findViewById(mListResId);
+			lv.setAdapter(mSAdapters[position]);
 			if(position <= 10){
 				expb.add((Button)convertView.findViewById(R.id.expbutton1));
 				expb.add((Button)convertView.findViewById(R.id.expbutton2));
@@ -600,11 +651,11 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 		}
 	}
 	
-	View.OnClickListener listpopup = new View.OnClickListener() {
+	/*View.OnClickListener listpopup = new View.OnClickListener() {
 		
 		@Override
 		public void onClick(View v) {
-			/*Context context = mAdapter.getContext();
+			Context context = mAdapter.getContext();
 			ILayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVCE);
 			mAdapter.Popup.addView(delete,params);
 			mAdapter.Popup.setOrientation(LinearLayout.VERTICAL);
@@ -613,11 +664,11 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 			mAdapter.explistpp.setContentView(convertView);
 			mAdapter.explistpp.setContentView(mAdapter.Popup);
 			LinearLayout mainLayout = new LinearLayout(context);
-			mAdapter.explistpp.showAtLocation(mAdapter.Popup, Gravity.BOTTOM, 10, 10);*/
+			mAdapter.explistpp.showAtLocation(mAdapter.Popup, Gravity.BOTTOM, 10, 10);
 		   // mAdapter.notifyAll();
 			//LinearLayout Popup = new LinearLayout(MainActivity.this);
 			//PopupWindow explistpp = new PopupWindow(MainActivity.this);
-			/*LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+			LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 			Button delete = new Button(mAdapter.getContext());
 			Context context = MainActivity.this.getBaseContext();
 			LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -641,7 +692,7 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 			Button cancel=(Button)findViewById(R.id.cancel);
 			explistpp.setBackgroundDrawable(getWallpaper());
 			cancel.setOnClickListener(cancellisten); 
-			cancel.setTag(explistpp);*/
+			cancel.setTag(explistpp);
 			//List<View> Views = (List<View>)v.getTag();
 			//((View)v.getTag()).setBackgroundColor(Color);
 			Popup expPop = new Popup();
@@ -670,19 +721,19 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 			explistpp.showAtLocation(layout, Gravity.CENTER, 10, 10);
 			explistpp.setFocusable(true);
 			layout.requestFocus();
-			/*for(int i = 0; i < MainActivity.this.items.size(); i++){
+			for(int i = 0; i < MainActivity.this.items.size(); i++){
 				mAdapter.Views.get(i).setBackgroundColor(color.holo_blue_light);
-			}*/
+			}
 			V.setBackgroundColor(color.background_light);
 			getWindow().setBackgroundDrawable( new ColorDrawable(Color.DKGRAY) ); 
 			Context context = layout.getContext();
 			Button cancel=(Button)layout.findViewById(R.id.cancel);
 			//Spinner dropdownsort = (Spinner)explistpp.getContentView().findViewById(R.id.dropdown);
-			/*List<String> droplist = new ArrayList<String>();
+			List<String> droplist = new ArrayList<String>();
 			droplist.add("Machine Name");
 			droplist.add("Date of Purchase");
 			droplist.add("Last greased");
-			droplist.add("Last serviced");*/
+			droplist.add("Last serviced");
 			V.requestFocus();
 			layout.setTag(V);
 			ArrayAdapter<String> adapter = new ArrayAdapter<String>(V.getContext(), android.R.layout.simple_spinner_item, droplist);
@@ -753,11 +804,8 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 			// TODO Auto-generated method stub
 			
 		}
-	}
+	}*/
 	
-	/*AdapterView.setOnItemSelectedListener droplistItemlistener = new AdapterView.OnItemSelectedClickListener(
-			) {
-	};*/
 	
 	View.OnClickListener cancellisten = new View.OnClickListener() {
 		
@@ -769,243 +817,8 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 		}
 	};
 	
-	private class ExpandableListAdapter extends BaseExpandableListAdapter{//Filterable{
-
-		HashMap<String, List<String>> objects;
-		LayoutInflater inflater;
-		List<String> groups; 
-		Context context;
-		int groupid;
-		int childid;
-		int expvnum;
-		private SparseBooleanArray mSelectedItemsIds;
-		List<TextView> ctv = new ArrayList<TextView>();
-		List<EditText> cet = new ArrayList<EditText>();
-		//HashMap<String,List<String>> collection;
-		List<Integer> listexpand;
-		public ExpandableListAdapter(Context context, int groupid, int childId,
-				HashMap<String,List<String>> objects, List<String> group, int expview, List<Integer> expandstatus) {
-			super();
-			mSelectedItemsIds = new SparseBooleanArray();
-			inflater = LayoutInflater.from(context);
-			this.context = context;
-			this.groupid = groupid;
-			childid = childId;
-			this.objects = objects;
-			groups = group;
-			expvnum = expview;
-			listexpand = expandstatus;
-		}
-
-		public class ViewHolder{
-				TextView laptopTxt;
-		}
-
-		/*@Override
-		public long getItemId(int position) {
-			String item = getItem(position);
-			return mIdMap.get(item);
-		}*/
-
-		@Override
-		public boolean hasStableIds() {
-			return true;
-		}
-
-
-		@Override
-		public Object getChild(int groupPosition, int childPosition) {
-			// TODO Auto-generated method stub
-			return objects.get(groups.get(groupPosition)).get(childPosition);
-			//return mIdMap.get(childPosition)
-			//return null;
-		}
-
-
-		@Override
-		public long getChildId(int groupPosition, int childPosition) {
-			// TODO Auto-generated method stub
-			return childPosition + groupPosition;
-			//return 0;
-		}
-
-		public String addcard(View expview){
-			EditText txt = (EditText)(View)((Activity) context).findViewById(groupid);
-			String newgroup = txt.getText().toString();
-			return newgroup;
-		}
-		@Override
-		public View getChildView(final int groupPosition,final int childPosition,
-				boolean isLastChild, View convertView, ViewGroup parent) {
-			ViewHolder holder;
-			final String laptop = (String) getChild(groupPosition, childPosition);
-		//	LayoutInflater inflater = (LayoutInflater) this.context
-                    //.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	        if (convertView == null) {
-	        	convertView = inflater.inflate(R.layout.child_item, null);
-	        	/*holder = new ViewHolder();
-	           	holder.laptopTxt = (TextView) convertView
-	                    .findViewById(childid);
-	            convertView.setTag(holder);
-	        */}/*
-	        else {
-	        holder = (ViewHolder) convertView.getTag();
-	        }
-*/	   
-	   //    holder.laptopTxt.setText(laptop);
-	     //   convertView.setBackgroundColor(mSelectedItemsIds.get(childPosition + groupPosition) ? 0x9934B5E4 : Color.TRANSPARENT);
-	       TextView txt = (TextView) convertView.findViewById(childid);
-	       txt.setText(laptop);
-	       EditText editch = (EditText)convertView.findViewById(R.id.edittextc);
-	       String tag = String.valueOf(expvnum)+"-"+String.valueOf(groupPosition);
-	       convertView.setTag(tag);
-	       editch.setTag(tag);
-	       txt.setOnClickListener(itemClickListener);
-	       txt.setTag(convertView);
-	       /*ImageView delete = (ImageView) convertView.findViewById(R.id.delete);
-	        delete.setOnClickListener(new OnClickListener() {
-	 
-	            public void onClick(View v) {
-	                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-	                builder.setMessage("Do you want to remove?");
-	                builder.setCancelable(false);
-	                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-	                            public void onClick(DialogInterface dialog, int id) {
-	                                List<String> child = objects.get(groups.get(groupPosition));
-	                                child.remove(childPosition);
-	                                notifyDataSetChanged();
-	                            }
-	                        });
-	                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-	                            public void onClick(DialogInterface dialog, int id) {
-	                                dialog.cancel();
-	                            }
-	                        });
-	                AlertDialog alertDialog = builder.create();
-	                alertDialog.show();
-	            }
-	        });
-	        
-	        /*else {
-	        TextView txt = (TextView) convertView.getTag();
-	        }*/
-			// TODO Auto-generated method stub
-			return convertView;
-		}
-
-
-		@Override
-		public int getChildrenCount(int groupPosition) {
-			// TODO Auto-generated method stub
-			return objects.get(groups.get(groupPosition)).size();
-		}
-
-
-		@Override
-		public Object getGroup(int groupPosition) {
-			// TODO Auto-generated method stub
-			return groups.get(groupPosition);
-			//return null;
-		}
-
-
-		@Override
-		public int getGroupCount() {
-			// TODO Auto-generated method stub
-			return groups.size();
-	//		return 0;
-		}
-
-
-		@Override
-		public long getGroupId(int groupPosition) {
-			// TODO Auto-generated method stub
-			return groupPosition;
-			//return 0;
-		}
-
-
-		@Override
-		public View getGroupView(int groupPosition, boolean isExpanded,
-				View convertView, ViewGroup parent) {
-			String laptopName = (String) getGroup(groupPosition);
-	        if (convertView == null) {
-	          /*  LayoutInflater infalInflater = (LayoutInflater) context
-	                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);*/
-	            convertView = inflater.inflate(R.layout.group_item,
-	                    null);
-	        }
-	        try{
-	        TextView item = (TextView) convertView.findViewById(groupid);
-	        item.setTypeface(null, Typeface.BOLD);
-	        item.setText(laptopName);
-	        EditText editg = (EditText)convertView.findViewById(R.id.edittextg);
-		    String tag = String.valueOf(expvnum)+"-"+String.valueOf(groupPosition);
-		    editg.setTag(tag);
-		    ExpandableListView elv = (ExpandableListView)parent;
-		    if((listexpand != null) && (listexpand.get(groupPosition) == 1)){
-		 
-		    	elv.expandGroup(groupPosition);}
-		    /*else if((listexpand != null) &&  (listexpand.get(groupPosition) == 0))
-		    	elv.collapseGroup(groupPosition);*/
-		    convertView.setTag(tag);
-		    item.setTag(convertView);
-		    item.setOnLongClickListener(longCLick);
-		    return convertView;}
-	        finally{
-	        	
-	        }
-			//return null;
-	    }
-		public void add(String object){
-			groups.add(object);
-			notifyDataSetChanged();
-		    Toast.makeText(context, groups.toString(), Toast.LENGTH_LONG).show();
-		}
-		
-    
-   // @Override
-    public void remove(String object) {
-        // super.remove(object);
-        groups.remove(object);
-        notifyDataSetChanged();
-    }
- 
-    public void toggleSelection(int position) {
-        selectView(position, !mSelectedItemsIds.get(position));
-    }
- 
-    public void removeSelection() {
-        mSelectedItemsIds = new SparseBooleanArray();
-        notifyDataSetChanged();
-    }
- 
-    public void selectView(int position, boolean value) {
-        if (value)
-            mSelectedItemsIds.put(position, value);
-        else
-            mSelectedItemsIds.delete(position);
- 
-        notifyDataSetChanged();
-    }
- 
-    public int getSelectedCount() {
-        return mSelectedItemsIds.size();
-    }
- 
-    public SparseBooleanArray getSelectedIds() {
-        return mSelectedItemsIds;
-    }
-    
-	@Override
-	public boolean isChildSelectable(int groupPosition, int childPosition) {
-		// TODO Auto-generated method stub
-		return true;
-		}
-
-	}
 	
-	//vertical Listviews
+	
 	/*private class ExpandableListAdapter extends BaseExpandableListAdapter{//Filterable{
 
 		HashMap<String, List<String>> objects;
@@ -1241,6 +1054,231 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 		}
 
 	}*/
+	
+	//vertical Listviews
+	private class ListViewListAdapter extends ArrayAdapter<String> {//Filterable{
+		LayoutInflater inflater;
+		Context context;
+		int groupid;
+		int childid;
+		//int expvnum;
+		private SparseBooleanArray mSelectedItemsIds;
+		//List<TextView> ctv = new ArrayList<TextView>();
+		//List<EditText> cet = new ArrayList<EditText>();
+		//HashMap<String,List<String>> collection;
+		//List<Integer> listexpand;
+		CoreDataSource cds;
+		List<String> machine;
+		public ListViewListAdapter(Context context, int groupid, CoreDataSource cds, int viewid, int position, List<String> mlist) {
+			super(context, viewid, mlist);
+			mSelectedItemsIds = new SparseBooleanArray();
+			inflater = LayoutInflater.from(context);
+			this.context = context;
+			this.groupid = groupid;
+			this.cds = cds;
+			machine = mlist;
+			//cursor = cds.databaseMachine.rawQuery("SELECT * FROM "+cds.dbMHelper.TABLE_NAME+" WHERE "+cds.dbMHelper.COLUMN_NAMES[2]+" = "+cds.getList(position), null);
+			/*this.objects = objects;
+			groups = group;
+			expvnum = expview;
+			listexpand = expandstatus;*/
+		}
+
+		public class ViewHolder{
+				TextView laptopTxt;
+		}
+
+		/*@Override
+		public long getItemId(int position) {
+			String item = getItem(position);
+			return mIdMap.get(item);
+		}*/
+
+		@Override
+		public boolean hasStableIds() {
+			return true;
+		}
+		
+		
+	/*	@Override
+		public View getChildView(final int groupPosition,final int childPosition,
+				boolean isLastChild, View convertView, ViewGroup parent) {
+			ViewHolder holder;
+			final String laptop = (String) getChild(groupPosition, childPosition);
+		//	LayoutInflater inflater = (LayoutInflater) this.context
+                    //.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	        if (convertView == null) {
+	        	convertView = inflater.inflate(R.layout.child_item, null);
+	        	holder = new ViewHolder();
+	           	holder.laptopTxt = (TextView) convertView
+	                    .findViewById(childid);
+	            convertView.setTag(holder);
+	        }
+	        else {
+	        holder = (ViewHolder) convertView.getTag();
+	        }
+	   
+	   //    holder.laptopTxt.setText(laptop);
+	     //   convertView.setBackgroundColor(mSelectedItemsIds.get(childPosition + groupPosition) ? 0x9934B5E4 : Color.TRANSPARENT);
+	       TextView txt = (TextView) convertView.findViewById(childid);
+	       txt.setText(laptop);
+	       EditText editch = (EditText)convertView.findViewById(R.id.edittextc);
+	       String tag = String.valueOf(expvnum)+"-"+String.valueOf(groupPosition);
+	       convertView.setTag(tag);
+	       editch.setTag(tag);
+	       txt.setOnClickListener(itemClickListener);
+	       txt.setTag(convertView);
+	       ImageView delete = (ImageView) convertView.findViewById(R.id.delete);
+	        delete.setOnClickListener(new OnClickListener() {
+	 
+	            public void onClick(View v) {
+	                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+	                builder.setMessage("Do you want to remove?");
+	                builder.setCancelable(false);
+	                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+	                            public void onClick(DialogInterface dialog, int id) {
+	                                List<String> child = objects.get(groups.get(groupPosition));
+	                                child.remove(childPosition);
+	                                notifyDataSetChanged();
+	                            }
+	                        });
+	                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+	                            public void onClick(DialogInterface dialog, int id) {
+	                                dialog.cancel();
+	                            }
+	                        });
+	                AlertDialog alertDialog = builder.create();
+	                alertDialog.show();
+	            }
+	        });
+	        
+	        /*else {
+	        TextView txt = (TextView) convertView.getTag();
+	        }
+			// TODO Auto-generated method stub
+			return convertView;
+		}*/
+
+
+	/* @Override
+		public int getChildrenCount(int groupPosition) {
+			// TODO Auto-generated method stub
+			return objects.get(groups.get(groupPosition)).size();
+		}
+
+
+		@Override
+		public Object getGroup(int groupPosition) {
+			// TODO Auto-generated method stub
+			return groups.get(groupPosition);
+			//return null;
+		}
+
+
+		@Override
+		public int getGroupCount() {
+			// TODO Auto-generated method stub
+			return groups.size();
+	//		return 0;
+		}
+
+
+		@Override
+		public long getGroupId(int groupPosition) {
+			// TODO Auto-generated method stub
+			return groupPosition;
+			//return 0;
+		}*/
+	
+		@Override
+		  public View getView(int position, View convertView, ViewGroup parent) {
+			if(convertView == null){
+				LayoutInflater inflater = (LayoutInflater) context
+				        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				convertView = inflater.inflate(R.layout.group_item,
+	                    null);
+				 TextView item = (TextView) convertView.findViewById(groupid);
+				        item.setTypeface(null, Typeface.BOLD);
+				        item.setText(machine.get(position));
+				        EditText editg = (EditText)convertView.findViewById(R.id.edittextg);
+					    //String tag = String.valueOf(expvnum)+"-"+String.valueOf(groupPosition);
+					    //editg.setTag(tag);
+					    //convertView.setTag(tag);
+					    item.setTag(convertView);
+					    item.setOnLongClickListener(longCLick);
+					    }
+			return convertView;
+		} 
+		
+		/*public View getGroupView(int groupPosition, boolean isExpanded,
+				View convertView, ViewGroup parent) {
+			String laptopName = (String) getGroup(groupPosition);
+	        if (convertView == null) {
+	            LayoutInflater infalInflater = (LayoutInflater) context
+	                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	            convertView = inflater.inflate(R.layout.group_item,
+	                    null);
+	        }
+	        try{
+	        TextView item = (TextView) convertView.findViewById(groupid);
+	        item.setTypeface(null, Typeface.BOLD);
+	        item.setText(laptopName);
+	        EditText editg = (EditText)convertView.findViewById(R.id.edittextg);
+		    String tag = String.valueOf(expvnum)+"-"+String.valueOf(groupPosition);
+		    editg.setTag(tag);
+		    ExpandableListView elv = (ExpandableListView)parent;
+		    if((listexpand != null) && (listexpand.get(groupPosition) == 1)){
+		 
+		    	elv.expandGroup(groupPosition);}
+		    else if((listexpand != null) &&  (listexpand.get(groupPosition) == 0))
+		    	elv.collapseGroup(groupPosition);
+		    convertView.setTag(tag);
+		    item.setTag(convertView);
+		    item.setOnLongClickListener(longCLick);
+		    return convertView;}
+	        finally{
+	        	
+	        }
+			//return null;
+	    }*/
+		
+		/*public void add(String object){
+			groups.add(object);
+			notifyDataSetChanged();
+		    Toast.makeText(context, groups.toString(), Toast.LENGTH_LONG).show();
+		}*/
+		
+    
+   // @Override
+ 
+    public void toggleSelection(int position) {
+        selectView(position, !mSelectedItemsIds.get(position));
+    }
+ 
+    public void removeSelection() {
+        mSelectedItemsIds = new SparseBooleanArray();
+        notifyDataSetChanged();
+    }
+ 
+    public void selectView(int position, boolean value) {
+        if (value)
+            mSelectedItemsIds.put(position, value);
+        else
+            mSelectedItemsIds.delete(position);
+ 
+        notifyDataSetChanged();
+    }
+ 
+    public int getSelectedCount() {
+        return mSelectedItemsIds.size();
+    }
+ 
+    public SparseBooleanArray getSelectedIds() {
+        return mSelectedItemsIds;
+    }
+
+
+	}
 	
 	View.OnLongClickListener longCLick = new View.OnLongClickListener(){
 
