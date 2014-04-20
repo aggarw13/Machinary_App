@@ -1,5 +1,6 @@
 package com.demo.Machinary_App;
 
+import com.demo.Machinary_App.*;
 import it.sephiroth.android.library.util.v11.MultiChoiceModeListener;
 import it.sephiroth.android.library.widget.AdapterView;
 import it.sephiroth.android.library.widget.AdapterView.OnItemClickListener;
@@ -17,6 +18,7 @@ import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -67,7 +69,7 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 	Button mButton2;
 	Button mButton3;
 	List<Machine> machinelist;
-	CoreDataSource datasource;
+	static CoreDataSource datasource;
 	List<String> items;
 	List<List<String>> cardlist;
 	public Filter expfilter;
@@ -88,25 +90,25 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 		setContentView( R.layout.activity_main );
 		datasource = new CoreDataSource(this);
 		datasource.open();
-		datasource.databaseMachine.execSQL("DROP TABLE IF EXISTS "+ datasource.dbMHelper.TABLE_NAME);
-		datasource.dbMHelper.onCreate(datasource.databaseMachine);
-		datasource.databaseList.execSQL("DROP TABLE IF EXISTS "+datasource.dbLHelper.TABLE_NAME);
-		datasource.dbLHelper.onCreate(datasource.databaseList);
-		datasource.databaseMachine.execSQL("Delete From "+datasource.dbMHelper.TABLE_NAME);
-		datasource.databaseList.execSQL("Delete From "+datasource.dbLHelper.TABLE_NAME);
+		datasource.getWritableDatabase();
+		/*datasource.database.execSQL("DROP TABLE IF EXISTS "+datasource.helper.tables[1].TABLE_NAME);
+		datasource.database.execSQL("DROP TABLE IF EXISTS "+datasource.helper.tables[0].TABLE_NAME);
+		datasource.helper.onCreate(datasource.database);*/
+		//datasource.database.execSQL("Delete From "+datasource.helper.tables[1].TABLE_NAME);
+		//datasource.helper.onUpgrade(datasource.database, 1, 2);
 		//datasource.databaseMachine.delete()(datasource.databaseMachine,null,1);
 		//datasource.databaseMachine.execSQL("Delete From "+datasource.dbMHelper.TABLE_NAME);
 		//datasource.databaseMachine.rawQuery("Delete From "+datasource.dbMHelper.TABLE_NAME, null);
 		items = new ArrayList<String>();
-		for( int i = 0; i < typestring.length; i++ ) {
-			List2 mlist = new List2(i,typestring[i],"Machine");
-			datasource.addList(mlist);
-			items.add( typestring[i] );
+		Log.w(LOG_TAG,"List table size = "+datasource.getListsCount());
+		for( int i = 0; i < datasource.getListsCount(); i++ ) {
+			//datasource.addList(new List2(i+1,typestring[i],"Machines"));
+			items.add(datasource.getAllLists().get(i).getName());
 		}
 		
 		
-		String[][] machineinfo = new String[][]{ { "Hydraulic (big): CNH Ultra 84372057", "MachineType1","2008"
-	     }, { "Oil: CNH 504192850", "MachineType2", "2012"}, { "Oil: Manutou J608773", "MachineType3", "2011" }, {"Hub cap: SKF 1743", "MachineType4", "2013"}};
+		String[][] machineinfo = new String[][]{ { "Hydraulic (big): CNH Ultra 84372057", "MachineType1","2008", "1-1-2013","2-13-2013","9-4-2013"
+	     }, { "Oil: CNH 504192850", "MachineType2", "2012", "1-3-2014","3-12-2014","4-1-2014"}, { "Oil: Manutou J608773", "MachineType3", "2011","12-24-2011","21-5-2013","31-3-2014" }, {"Hub cap: SKF 1743", "MachineType4", "2013","3-3-2012","2-30-2014","6-15-2013"}};
 	
 		
 		/*TextView view = new TextView(this);
@@ -115,38 +117,19 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 		        popoup.setWindowLayoutMode(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
 		        // set window at position
-	        	popoup.showAtLocation(getWindow().getDecorView(), BIND_ABOVE_CLIENT, 100, 100);
+	        	popoup.showAtLocation(getWindow().getDecorView(), BIND_ABOVE_CLIENT, 100, 100);*/
 
-		popoup.update();*/
-		
-		/*collection = new ArrayList<HashMap<String, List<String>>>();
-		for (int j = 0; j < items.size(); j++){
-				HashMap<String, List<String>> collect = new LinkedHashMap<String, List<String>>();
-				for(int k = 0; k < cardstring[j].length; k++ ){
-					List<String> l = new ArrayList<String>();
-					l.add(laptops[j][k]);
-					collect.put(cardstring[j][k],l);
-				}
-				collection.add(collect);
- 		}*/
 		
 		String cardstring[] = {"2008 STX 450 Quadtrack", "2012 Case 450 Quadtrack","H & Silage","2012 Manitou Telehandler"};
 		
-		for (int i = 0; i < cardstring.length; i++) {
-				Machine machine =  new Machine(i, cardstring[i], typestring[i], Integer.parseInt(machineinfo[i][2]),0,0,machineinfo[i][0]);
+		/*for (int i = 0; i < cardstring.length; i++) {
+				Machine machine =  new Machine(i, cardstring[i], typestring[i], Integer.parseInt(machineinfo[i][2]),machineinfo[i][3],machineinfo[i][4],machineinfo[i][5],"Nil");
 				datasource.addMachine(machine);
-			}
-			Log.w(LOG_TAG,"Database Size = " + datasource.databaseMachine.rawQuery("SELECT * FROM " + datasource.dbMHelper.TABLE_NAME, null).getCount());
-			Cursor cursor = datasource.databaseList.rawQuery("SELECT * FROM " + datasource.dbLHelper.TABLE_NAME, null);
-			cursor.moveToFirst();
-			Log.w(LOG_TAG,"Column Id  = " + cursor.getString(0));
+			}*/
+			//Log.w(LOG_TAG,"Database Size = " + datasource.getMachinesCount());
 			//Cursor mcursor = datasource.databaseMachine.rawQuery("SELECT "+datasource.dbMHelper.COLUMN_NAMES[0]+" FROM "+datasource.dbMHelper.TABLE_NAME+" WHERE "+datasource.dbMHelper.COLUMN_NAMES[1]+" = "+ typestring[0], null);
-	/*	for(int i = 0; i < cardstring.length; i++ ){
-			collection[i] = new LinkedHashMap<String, List<String>>();
-			for(int k = 0; k < cardstring[i].length; k++){
-				collection[i].put(cardstring[i][k], laptops[])*/
 		
-		mAdapter = new TestAdapter( this, R.layout.test_item_1, android.R.id.text1, R.id.listview, datasource, items);
+		mAdapter = new TestAdapter( this, R.layout.test_item_1, android.R.id.text1, R.id.listview, datasource, items, null);
 		listView.setHeaderDividersEnabled( true );
 		listView.setFooterDividersEnabled( true );
 		
@@ -235,131 +218,90 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 	};
 	
 	public class expFilter extends Filter{
-		/*List<String> mItems = new ArrayList<String>(); 
+		/*List<String> mItems = new ArrayList<Strinag>(); 
     	List<List<String>> group = new ArrayList<List<String>>();
     	List<List<Integer>> expanded = new ArrayList<List<Integer>>();*/
-		CoreDataSource data;
+		//CoreDataSource data;
+		TestAdapter mAdapter;
+		List<Machine> mlist; 
+		List<String> mtypes;
+		/*public expFilter(){
+			data = new CoreDataSource(MainActivity.this);
+		}*/
 	    	@Override
 			protected FilterResults performFiltering(CharSequence arg0) {
-	    		data = new CoreDataSource(MainActivity.this);
-	    		this.data.open();
-	    		data.databaseMachine.execSQL("DROP TBLE IF EXISTS "+ data.dbMHelper.TABLE_NAME);
+	    	//	data = new CoreDataSource(MainActivity.this);
+	    		//data.open();
+	    		//data.database.execSQL("DROP TABLE IF EXISTS "+ MachineTable.TABLE_NAME, null);
+	    		//data.database.execSQL("DROP TABLE IF EXISTS "+ ListTable.TABLE_NAME, null);
+	    		//data.helper.onCreate(data.database);
+	    		mlist = new ArrayList<Machine>();
+	    		mtypes = new ArrayList<String>();
 				FilterResults results1 = new FilterResults(); 
 				FilterResults results2 = new FilterResults(); 
 				if(arg0 == null | arg0.length() == 0){
 						/*group = cardlist;
 				        results1.values = collection;
 				        mItems = items;*/
-				        data = MainActivity.this.datasource;
-				        results1.values = data;
+				      //  data = MainActivity.this.datasource;
+				        results1.values = datasource;
+				        this.mtypes = items;
+				        mlist = null;
+				       // listView.setAdapter(MainActivity.this.mAdapter);
 				    }
 				    else {
-				    	List<Machine> mlist = new ArrayList<Machine>(); 
-				    	mlist = MainActivity.this.datasource.getAllMachines();
-				    	//Log.w(LOG_TAG,"Searchdatabase size = "+ mlist.size());
-				        for(int i = 0; i < mlist.size(); i++){
-				        	if(mlist.get(i).getName().toUpperCase().startsWith(((String) arg0).toUpperCase())){
-				        		//Log.w(LOG_TAG,"Searchdatabase size = "+ mlist.size());
-				        		data.addMachine(mlist.get(i));
-				        		//Log.w(LOG_TAG,"Searchdatabase size = "+ data.databaseMachine.rawQuery("SELECT * FROM "+data.dbMHelper.TABLE_NAME,null).getCount());
-				        		if(data.databaseMachine.rawQuery("SELECT * FROM "+data.dbMHelper.TABLE_NAME+ " WHERE "+data.dbMHelper.COLUMN_NAMES[1]+" = '"+mlist.get(i).getList()+"'", null).getCount() == 0)
-				        			data.addList(new List2(0,mlist.get(i).getList(),"Machine"));}
-				        }
-				        results1.values = data;
-				    }
-				return results1;
+				    	MainActivity.this.datasource.getReadableDatabase();
+				        for(int i = 0; i < MainActivity.this.datasource.getMachinesCount(); i++){
+				        	if(MainActivity.this.datasource.getAllMachines().get(i).getName().toUpperCase().startsWith(((String) arg0).toUpperCase())){
+				        		//data.addMachine(MainActivity.this.datasource.getAllMachines().get(i));
+				        		mlist.add(MainActivity.this.datasource.getAllMachines().get(i));
+				        		Log.w(LOG_TAG,"Searchdatabase size = "+ mlist.size());
+				        		if(!mtypes.contains(MainActivity.this.datasource.getAllMachines().get(i).getList())){
+				        			mtypes.add(MainActivity.this.datasource.getAllMachines().get(i).getList());
+				        			Log.w(LOG_TAG,"Searchdatabase list type size = "+ mtypes.size());
+				        		//Log.w(LOG_TAG,"Searchfiltdatabase size = "+ data.database.rawQuery("SELECT * FROM "+MachineTable.TABLE_NAME,null).getCount());
+				        		//if(data.database.rawQuery("SELECT * FROM "+MachineTable.TABLE_NAME+ " WHERE "+data.helper.tables[0].COLUMN_NAMES[1]+" = '"+MainActivity.this.datasource.getAllMachines().get(i).getList()+"'", null).getCount() == 0){	
+				
+				        			//data.addList(new List2(0,MainActivity.this.datasource.getAllMachines().get(i).getList(),"Machine"));}}
+				        }}}
+			  results1.values = datasource;
 	    	}
-				 
-				/*        // We perform filtering operation
-				        List<HashMap<String,List<String>>> ncollectionList = new ArrayList<HashMap<String,List<String>>>();
-				        List<List<String>> grp = new ArrayList<List<String>>();
-				        List<String> Items = new ArrayList<String>();
-				        List<List<Integer>> expinterim = new ArrayList<List<Integer>>();
-				        //for (HashMap<String, List<String>> M : MainActivity.collection) {
-
-				        	HashMap<String,List<String>> interim = new LinkedHashMap<String,List<String>>();
-				        	List<String> list = new ArrayList<String>();
-					        List<Integer> listexpand = new ArrayList<Integer>();
-			        		int check = 0;
-				        	for(int j = 0; j < collection.get(i).size(); j++){
-	 			        	//for (HashMap.Entry<String, List<String>> e : mAdapter.mCards.get(i).entrySet()) {
-				        		String group = cardlist.get(i).get(j);
-				        		if (cardlist.get(i).get(j).toUpperCase().startsWith(((String) arg0).toUpperCase())){
-				        			list.add(group);
-					                interim.put(cardlist.get(i).get(j),collection.get(i).get(cardlist.get(i).get(j)));
-					                check = 0;
-					                }
-				        		for(int k = 0; k < collection.get(i).get(group).size(); k++){
-				        			if(collection.get(i).get(group).get(k).toUpperCase().startsWith(((String) arg0).toUpperCase())){
-				        				if(!list.contains(group)){
-				        					list.add(group);
-				        					interim.put(group, collection.get(i).get(group));
-				        					check = 1;}
-				        				else
-				        					check = 1;
-				        				}
-				        			}
-				        		listexpand.add(check);
-				        		}
-				        	    //and to get value
-				        	if (interim.size() == 0){
-				        		List<String> l = new ArrayList<String>();
-				        		l.add("Empty");
-				        		interim.put("Empty",l);
-				        		ncollectionList.add(interim);
-				        		grp.add(l);
-				        	}
-				        	else
-				        	{
-				        		if(items.get(i).toUpperCase().startsWith(((String) arg0).toUpperCase())){
-				        			Items.add(items.get(i));
-					        		grp.add(group.get(i));
-					        		ncollectionList.add(collection.get(i));
-					        		expinterim.add(null);
-				        		}
-				        		//else{
-				        		Items.add(items.get(i));
-				        		grp.add(list);
-				        		ncollectionList.add(interim);
-				        		expinterim.add(listexpand);//}
-				        	}
-				        }
-				        results1.values = ncollectionList;
-				        results1.count = ncollectionList.size();
-				        results2.values = grp;
-				        group = grp;
-				        mItems = Items;
-				        expanded = expinterim;
-				    }
-				    return results1;}
-*/
+				return results1;}
 			@Override
 			protected void publishResults(CharSequence arg0,
 					FilterResults arg1) {
-				data = new CoreDataSource(MainActivity.this);
-				this.data.open();
+				//data = new CoreDataSource(MainActivity.this);
 				//Log.w(LOG_TAG,"Searchdatabase size = "+ data.databaseMachine.rawQuery("SELECT * FROM "+data.dbMHelper.TABLE_NAME, null).getCount());
-				if(data.getMachinesCount() == MainActivity.this.datasource.getMachinesCount()){
+				//if((CoreDataSource)arg1.values.getMachinesCount() == MainActivity.this.datasource.getMachinesCount()){
 					/*mAdapter.mCards = (List<HashMap<String,List<String>>>)arg1.values ;
 					mAdapter.groups = group;
 					mAdapter.mItems = mItems;
 					mAdapter.expand = null;
-					expanded = null;*/
+					expanded = null;
 					mAdapter.data = MainActivity.this.datasource;
-					mAdapter.notifyDataSetChanged();
-				}else
-				{
-					/*mAdapter.mCards = (List<HashMap<String,List<String>>>) arg1.values;
+					mAdapter.notifyDataSetChanged();*/
+				//}else
+				//{
+				/*	mAdapter.mCards = (List<HashMap<String,List<String>>>) arg1.values;
 					mAdapter.groups = group;
 					mAdapter.mItems = mItems;
-					mAdapter.expand = expanded;*/
+					mAdapter.expand = expanded;
 					mAdapter.data = data;
-					mAdapter.notifyDataSetChanged();
-				}
-				//mAdapter = new TestAdapter(MainActivity.this, R.layout.test_item_1, android.R.id.text1, R.id.listview, mItems, (List<HashMap<String,List<String>>>)arg1.values, group, expanded);
-				//listView.setAdapter( mAdapter );
-				// TODO Auto-generated method stub
-			}
+					mAdapter.notifyDataSetChanged();*/
+				//}
+				//CoreDataSource dataf = new CoreDataSource(MainActivity.this);
+				
+				/*dataf.database.execSQL("DELETE FROM "+MachineTable.TABLE_NAME);
+				dataf.database.execSQL("DELETE FROM "+ListTable.TABLE_NAME);
+				for (int i = 0; i < mlist.size(); i++){
+					dataf.addMachine(mlist.get(i));
+					if(dataf.database.rawQuery("SELECT * FROM "+MachineTable.TABLE_NAME+ " WHERE "+dataf.helper.tables[0].COLUMN_NAMES[1]+" = '"+mlist.get(i).getList()+"'", null).getCount() == 0){
+	        			dataf.addList(new List2(0,mlist.get(i).getList(),"Machine"));}
+				}*/
+				TestAdapter mAdapter = new TestAdapter(MainActivity.this, R.layout.test_item_1, android.R.id.text1, R.id.listview, datasource, mtypes, mlist);
+				MainActivity.this.listView.setAdapter(mAdapter);
+				Log.w(LOG_TAG,"The adapter has been modified");
+		}
 	}
 	@Override
 	public void onClick( View v ) {
@@ -397,11 +339,13 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 		//mAdapter.mCards.get(category).remove(mAdapter.groups.get(category).size() - 1);
 		//mAdapter.groups.get(category).remove(mAdapter.groups.get(category).size() - 1);
 		CoreDataSource cds =  MainActivity.this.datasource;
-		String query = "SELECT * FROM "+MainActivity.this.datasource.dbMHelper.TABLE_NAME+" WHERE "+cds.dbMHelper.COLUMN_NAMES[1]+ " = '"+cds.getList(category + 1).getName()+"'"; 
-		int count = cds.databaseMachine.rawQuery(query,null).getCount();
-		Cursor cursor = cds.databaseMachine.rawQuery(query,null);
+		cds.getReadableDatabase();
+		Log.w(LOG_TAG,"List delete id = " + cds.getAllLists().get(0).getId());
+		String query = "SELECT * FROM "+MachineTable.TABLE_NAME+" WHERE "+cds.helper.tables[0].COLUMN_NAMES[1]+ " = '"+cds.getList(category + 1).getName()+"'"; 
+		int count = cds.database.rawQuery(query,null).getCount();
+		Cursor cursor = cds.database.rawQuery(query,null);
 		cursor.moveToLast();
-		if(cds.databaseMachine.rawQuery(query,null).getCount() != 0){
+		if(cds.database.rawQuery(query,null).getCount() != 0){
 			cds.deleteMachine(cds.cursor2Machine(cursor));
 			mAdapter.data = cds;
 			mAdapter.notifyDataSetChanged();
@@ -439,10 +383,10 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 		/*if(mAdapter.expand != null)
 			mAdapter.expand.get(category).add(0);
 		mAdapter.notifyDataSetChanged();*/
-		String Query = "SELECT * FROM "+ MainActivity.this.datasource.dbMHelper.TABLE_NAME;
-		Cursor cursor = MainActivity.this.datasource.databaseMachine.rawQuery(Query, null);
+		String Query = "SELECT * FROM "+ MachineTable.TABLE_NAME;
+		Cursor cursor = MainActivity.this.datasource.database.rawQuery(Query, null);
 //Log.w(LOG_Tag)
-		Machine nmach = new Machine(cursor.getCount() + 1, "New machine", MainActivity.this.datasource.getList(category + 1).getName(),2014,0,0,"No info");
+		Machine nmach = new Machine(cursor.getCount() + 1, "New machine", MainActivity.this.datasource.getList(category + 1).getName(),2014,"Nil","Nil","No info","Nil");
 		MainActivity.this.datasource.addMachine(nmach);
 		mAdapter.data = MainActivity.this.datasource;
 		mAdapter.notifyDataSetChanged();
@@ -468,15 +412,15 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 	
 	private void removeElements() {
 		CoreDataSource cds = MainActivity.this.datasource;
-		int count = cds.databaseList.rawQuery("SELECT * FROM "+ cds.dbLHelper.TABLE_NAME, null).getCount();
-		Cursor cursor =	cds.databaseList.rawQuery("SELECT * FROM "+ cds.dbLHelper.TABLE_NAME, null);
+		Cursor cursor = cds.database.rawQuery("SELECT * FROM "+ ListTable.TABLE_NAME, null);
+		int count  = cursor.getCount();
 		cursor.moveToLast();
 		if( count > 0 & count < 10 ) {
 			/*mAdapter.mItems.remove(mAdapter.mItems.size()-1);
 			mAdapter.mCards.remove(mAdapter.mItems.size());
 			mAdapter.groups.remove(mAdapter.mItems.size());
 			mSAdapters[mAdapter.mItems.size() - 1] = null;*/
-			cds.databaseList.delete(cds.dbLHelper.TABLE_NAME, cds.dbLHelper.COLUMN_NAMES[0] + " = ?" , new String[] { String.valueOf(cursor.getString(1)) });
+			cds.database.delete(ListTable.TABLE_NAME, cds.helper.tables[1].COLUMN_NAMES[0] + " = ?" , new String[] { String.valueOf(cursor.getString(1)) });
 			mAdapter.data = cds;
 			mAdapter.notifyDataSetChanged();
 		}
@@ -527,13 +471,13 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 		List<View> Views = new ArrayList<View>();
 		Context context;
 		CoreDataSource data;
-		List<List2> mtypes;
+		List<String> mtypes;
 		List<String> mlist;
-		//List<HashMap<String, List<String>>> mCards;
-		//List<List<Integer>> expand;
+		List<List2> mtypesl;
+		List<Machine> mfilter;
 		HListView Hlist;
-		public TestAdapter( Context context, int resourceId, int textViewResourceId, int listViewId, CoreDataSource datasource, List<String> mlist)  {
-			super( context, resourceId, mlist);
+		public TestAdapter( Context context, int resourceId, int textViewResourceId, int listViewId, CoreDataSource datasource, List<String> mtypes, List<Machine> mfilter)  {
+			super( context, resourceId, mtypes);
 			Popup = new LinearLayout(MainActivity.this);
 			mInflater = LayoutInflater.from( context );
 			mResource = resourceId;
@@ -545,7 +489,9 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 			this.context = context;
 			//expand = expandstatus;
 			data = datasource;
-			mtypes = data.getAllLists();
+			mtypesl = data.getAllLists();
+			this.mtypes = mtypes;
+			this.mfilter = mfilter;
 		}
 		
 		public boolean hasStableIds() {
@@ -578,7 +524,7 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 			}
 			
 			TextView textView = (TextView) convertView.findViewById( mTextResId );
-			textView.setText(mtypes.get(position).getName());
+			textView.setText(mtypes.get(position));
 			textView.setTypeface(null, Typeface.BOLD);
 			options = (Button)convertView.findViewById(R.id.popupbutton);
 			Views.add(convertView);
@@ -593,17 +539,26 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 				mSAdapters[position] = new ListViewListAdapter(getContext(), R.id.laptopg, mCards.get(position), groups.get(position), position, null);
 			ExpandableListView expListView = (ExpandableListView)convertView.findViewById(mListResId);
 			*/
-			Cursor mcursor = MainActivity.this.datasource.databaseMachine.rawQuery("SELECT * FROM "+data.dbMHelper.TABLE_NAME+" WHERE "+data.dbMHelper.COLUMN_NAMES[1]+" = '"+ mtypes.get(position).getName().toString()+"'", null);
-			mcursor.moveToFirst();
 			mlist= new ArrayList<String>();
+			if(mfilter == null){
+			Cursor mcursor = MainActivity.this.datasource.database.rawQuery("SELECT * FROM "+MachineTable.TABLE_NAME+" WHERE "+data.helper.tables[0].COLUMN_NAMES[1]+" = '"+ mtypesl.get(position).getName().toString()+"'", null);
+			mcursor.moveToFirst();
 			Log.w(LOG_TAG,"Database Size = " + mcursor.getCount());
 			for (int  i = 0; i < mcursor.getCount(); i++ ){
 				mlist.add(mcursor.getString(1));
 				mcursor.moveToNext();
+			}}
+			else{
+				for (int  i = 0; i < mfilter.size(); i++ ){
+					Log.w(LOG_TAG,"Vertical filtered  machine size = "+ mfilter.get(i).getList());
+					if(mfilter.get(i).getList().equals(mtypes.get(position)))
+						mlist.add(mfilter.get(i).getName());}
 			}
+			Log.w(LOG_TAG,"Vertical ListView position = "+ position);
+			if(position <= mtypes.size()){
 			mSAdapters[position] = new ListViewListAdapter(getContext(), R.id.laptopg, data, mListResId, position, mlist) ;
 			ListView  lv = (ListView)convertView.findViewById(mListResId);
-			lv.setAdapter(mSAdapters[position]);
+			lv.setAdapter(mSAdapters[position]);}
 			if(position <= 10){
 				expb.add((Button)convertView.findViewById(R.id.expbutton1));
 				expb.add((Button)convertView.findViewById(R.id.expbutton2));
@@ -1060,7 +1015,7 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 		LayoutInflater inflater;
 		Context context;
 		int groupid;
-		int childid;
+		//int childid;
 		//int expvnum;
 		private SparseBooleanArray mSelectedItemsIds;
 		//List<TextView> ctv = new ArrayList<TextView>();
@@ -1068,6 +1023,7 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 		//HashMap<String,List<String>> collection;
 		//List<Integer> listexpand;
 		CoreDataSource cds;
+		public int pos;
 		List<String> machine;
 		public ListViewListAdapter(Context context, int groupid, CoreDataSource cds, int viewid, int position, List<String> mlist) {
 			super(context, viewid, mlist);
@@ -1193,6 +1149,7 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 		@Override
 		  public View getView(int position, View convertView, ViewGroup parent) {
 			if(convertView == null){
+				this.pos = position;
 				LayoutInflater inflater = (LayoutInflater) context
 				        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				convertView = inflater.inflate(R.layout.group_item,
@@ -1200,6 +1157,14 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 				 TextView item = (TextView) convertView.findViewById(groupid);
 				        item.setTypeface(null, Typeface.BOLD);
 				        item.setText(machine.get(position));
+				        item.setOnTouchListener(new View.OnTouchListener() {
+							@Override
+							public boolean onTouch(View arg0, MotionEvent arg1) {
+				                Intent nextScreen = new Intent(getApplicationContext(), MachineActivity.class);
+				                nextScreen.putExtra("Machine", machine.get(pos));
+				                startActivity(nextScreen);
+								return false;
+							}});
 				        EditText editg = (EditText)convertView.findViewById(R.id.edittextg);
 					    //String tag = String.valueOf(expvnum)+"-"+String.valueOf(groupPosition);
 					    //editg.setTag(tag);

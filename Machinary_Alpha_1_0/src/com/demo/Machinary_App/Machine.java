@@ -10,8 +10,9 @@ public class Machine{
 	private String 	name; 			//Required
 	private String 	list; 			//Required
 	private int 	year;
-	private int 	lastGrease;
-	private int 	lastMaintenance;
+	private String purchase;
+	private String 	lastGrease;
+	private String 	lastMaintenance;
 	private String 	color;
 	// TODO implement these data types
 	private long 	picture;
@@ -23,11 +24,12 @@ public class Machine{
 	// Interval Settings
 	// Comments List
 
-	public Machine(long id, String name, String list, int year, int lastGrease, int lastMaintenance, String color) {
+	public Machine(long id, String name, String list, int year, String Purchased, String lastGrease, String lastMaintenance, String color) {
 		this.id = id;
 		this.name = name;
 		this.list = list;
 		this.year = year;
+		this.purchase = Purchased;
 		this.lastGrease = lastGrease;
 		this.lastMaintenance = lastMaintenance;
 		this.color = color;
@@ -80,24 +82,32 @@ public class Machine{
 	public long getThumbnail() {
 		return thumbnail;
 	}
+	
+	public void setPurchaseDate(String purchased){
+		purchase = purchased;
+	}
 
 	public void setThumbnail(long Thumbnail) {
 		this.thumbnail = Thumbnail;
 	}
 
-	public long getLastGrease() {
+	public String getLastGrease() {
 		return lastGrease;
 	}
 
-	public void setLastGrease(int lastGrease) {
+	public void setLastGrease(String lastGrease) {
 		this.lastGrease = lastGrease;
 	}
 
-	public long getLastMaintenance() {
+	public String getLastMaintenance() {
 		return lastMaintenance;
 	}
 
-	public void setLastMaintenance(int lastMaintenance) {
+	public String getPurchaseDate(){
+		return purchase;
+	}
+	
+	public void setLastMaintenance(String lastMaintenance) {
 		this.lastMaintenance = lastMaintenance;
 	}
 
