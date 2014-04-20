@@ -1169,8 +1169,8 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 					    //String tag = String.valueOf(expvnum)+"-"+String.valueOf(groupPosition);
 					    //editg.setTag(tag);
 					    //convertView.setTag(tag);
-					    item.setTag(convertView);
-					    item.setOnLongClickListener(longCLick);
+					    //item.setTag(convertView);
+					    //item.setOnLongClickListener(longCLick);
 					    }
 			return convertView;
 		} 
