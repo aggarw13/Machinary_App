@@ -56,7 +56,9 @@ public class CoreDataSource {
 	            cursor.getString(4),
 	            cursor.getString(5),
 	            cursor.getString(6),
-	            cursor.getString(7));
+	            cursor.getString(7),
+	            cursor.getString(8),cursor.getString(9),cursor.getString(10),cursor.getString(11)
+	         );
 		return machine;
 	}
 	
@@ -70,6 +72,10 @@ public class CoreDataSource {
 	    values.put(MachineTable.COLUMN_NAMES[4], machine.getLastGrease()); // Machine Last Grease
 	    values.put(MachineTable.COLUMN_NAMES[5], machine.getLastMaintenance()); // Machine Last Maintenance
 	    values.put(MachineTable.COLUMN_NAMES[6], machine.getColor()); // Machine Card Color
+	    values.put(MachineTable.COLUMN_NAMES[7], machine.getoilfilter());
+	    values.put(MachineTable.COLUMN_NAMES[8], machine.gettransfilter());
+	    values.put(MachineTable.COLUMN_NAMES[9], machine.gethydfilter());
+	    values.put(MachineTable.COLUMN_NAMES[10], machine.gethydpump());
 	    // TODO, add in other columns as needed
 	    //values.put(dbMHelper.COLUMN_NAMES[6], machine.getList()); // Machine List Number
 	    return values;
@@ -151,7 +157,7 @@ public class CoreDataSource {
 	    		MachineTable.ALL_COLUMNS, 
 	    		MachineTable.COLUMN_ID + "=?",
 	            new String[] { String.valueOf(id) }, 
-	            null, null, null, null);
+	            null, null, null);
 	    if (cursor != null)
 	        cursor.moveToFirst();
 	 

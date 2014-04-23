@@ -82,7 +82,7 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 	//Trello-like card strings
 	String[] typestring = new String[] {"MachineType1", "MachineType2", "MachineType3", "MachineType4"};
 	List<List2> machlist = new ArrayList<List2>();
-
+	Button sortbyMachine, sortbyGrease, sortbyMain;
 	@Override
 	protected void onCreate( Bundle savedInstanceState ) {
 		super.onCreate( savedInstanceState );
@@ -91,9 +91,9 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 		datasource = new CoreDataSource(this);
 		datasource.open();
 		datasource.getWritableDatabase();
-		/*datasource.database.execSQL("DROP TABLE IF EXISTS "+datasource.helper.tables[1].TABLE_NAME);
+		datasource.database.execSQL("DROP TABLE IF EXISTS "+datasource.helper.tables[1].TABLE_NAME);
 		datasource.database.execSQL("DROP TABLE IF EXISTS "+datasource.helper.tables[0].TABLE_NAME);
-		datasource.helper.onCreate(datasource.database);*/
+		datasource.helper.onCreate(datasource.database);
 		//datasource.database.execSQL("Delete From "+datasource.helper.tables[1].TABLE_NAME);
 		//datasource.helper.onUpgrade(datasource.database, 1, 2);
 		//datasource.databaseMachine.delete()(datasource.databaseMachine,null,1);
@@ -101,14 +101,14 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 		//datasource.databaseMachine.rawQuery("Delete From "+datasource.dbMHelper.TABLE_NAME, null);
 		items = new ArrayList<String>();
 		Log.w(LOG_TAG,"List table size = "+datasource.getListsCount());
-		for( int i = 0; i < datasource.getListsCount(); i++ ) {
-			//datasource.addList(new List2(i+1,typestring[i],"Machines"));
+		for( int i = 0; i < typestring.length; i++ ) {
+			datasource.addList(new List2(i+1,typestring[i],"Machines"));
 			items.add(datasource.getAllLists().get(i).getName());
 		}
 		
 		
-		String[][] machineinfo = new String[][]{ { "Hydraulic (big): CNH Ultra 84372057", "MachineType1","2008", "1-1-2013","2-13-2013","9-4-2013"
-	     }, { "Oil: CNH 504192850", "MachineType2", "2012", "1-3-2014","3-12-2014","4-1-2014"}, { "Oil: Manutou J608773", "MachineType3", "2011","12-24-2011","21-5-2013","31-3-2014" }, {"Hub cap: SKF 1743", "MachineType4", "2013","3-3-2012","2-30-2014","6-15-2013"}};
+		String[][] machineinfo = new String[][]{ { "Hydraulic (big): CNH Ultra 84372057", "MachineType1","2008", "1-1-2013","2-13-2013","9-4-2013","xxxxxxxxx23","xxxxxx23","24462771xx","xyxyxx21"
+	     }, { "Oil: CNH 504192850", "MachineType2", "2012", "1-3-2014","3-12-2014","4-1-2014","xxxxxxxxx23","xxxxxx23","24462771xx","xyxyxx21"}, { "Oil: Manutou J608773", "MachineType3", "2011","12-24-2011","21-5-2013","31-3-2014" ,"xxxxxxxxx23","xxxxxx23","24462771xx","xyxyxx21"}, {"Hub cap: SKF 1743", "MachineType4", "2013","3-3-2012","2-30-2014","6-15-2013","xxxxxxxxx23","xxxxxx23","24462771xx","xyxyxx21"}};
 	
 		
 		/*TextView view = new TextView(this);
@@ -122,13 +122,48 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 		
 		String cardstring[] = {"2008 STX 450 Quadtrack", "2012 Case 450 Quadtrack","H & Silage","2012 Manitou Telehandler"};
 		
-		/*for (int i = 0; i < cardstring.length; i++) {
-				Machine machine =  new Machine(i, cardstring[i], typestring[i], Integer.parseInt(machineinfo[i][2]),machineinfo[i][3],machineinfo[i][4],machineinfo[i][5],"Nil");
+		for (int i = 0; i < cardstring.length; i++) {
+				Machine machine =  new Machine(i, cardstring[i], typestring[i], Integer.parseInt(machineinfo[i][2]),machineinfo[i][3],machineinfo[i][4],machineinfo[i][5],"Nil",machineinfo[i][6],machineinfo[i][7],machineinfo[i][8],machineinfo[i][9] );
 				datasource.addMachine(machine);
-			}*/
+			}
 			//Log.w(LOG_TAG,"Database Size = " + datasource.getMachinesCount());
 			//Cursor mcursor = datasource.databaseMachine.rawQuery("SELECT "+datasource.dbMHelper.COLUMN_NAMES[0]+" FROM "+datasource.dbMHelper.TABLE_NAME+" WHERE "+datasource.dbMHelper.COLUMN_NAMES[1]+" = "+ typestring[0], null);
-		
+		sortbyMachine = (Button)findViewById(R.id.nameOrder);
+		sortbyGrease = (Button)findViewById(R.id.greaseOrder);
+		sortbyMain = (Button)findViewById(R.id.maintenanceOrder);
+		sortbyMachine.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				sortbyGrease.setPressed(false);
+				sortbyMain.setPressed(false);
+				sortbyMachine.setPressed(true);
+				datasource.database.execSQL("UPDATE +"+MachineTable.TABLE_NAME+" ORDER BY "+MachineTable.COLUMN_NAMES[0]);
+			}
+			
+		});
+		sortbyGrease.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				sortbyGrease.setPressed(true);
+				sortbyMain.setPressed(false);
+				sortbyMachine.setPressed(false);
+				datasource.database.execSQL("UPDATE +"+MachineTable.TABLE_NAME+" ORDER BY "+MachineTable.COLUMN_NAMES[0]);
+			}
+			
+		});
+		sortbyMain.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				sortbyGrease.setPressed(false);
+				sortbyMain.setPressed(true);
+				sortbyMachine.setPressed(false);
+				datasource.database.execSQL("UPDATE +"+MachineTable.TABLE_NAME+" ORDER BY "+MachineTable.COLUMN_NAMES[0]);
+			}
+			
+		});
 		mAdapter = new TestAdapter( this, R.layout.test_item_1, android.R.id.text1, R.id.listview, datasource, items, null);
 		listView.setHeaderDividersEnabled( true );
 		listView.setFooterDividersEnabled( true );
@@ -386,7 +421,7 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 		String Query = "SELECT * FROM "+ MachineTable.TABLE_NAME;
 		Cursor cursor = MainActivity.this.datasource.database.rawQuery(Query, null);
 //Log.w(LOG_Tag)
-		Machine nmach = new Machine(cursor.getCount() + 1, "New machine", MainActivity.this.datasource.getList(category + 1).getName(),2014,"Nil","Nil","No info","Nil");
+		Machine nmach = new Machine(cursor.getCount() + 1, "New machine", MainActivity.this.datasource.getList(category + 1).getName(),2014,"Nil","Nil","No info","Nil","xxxxxxxxx","xxxxxxxxxxxxx","xxxxxxxxxxxx","xxxxxxxxxxx");
 		MainActivity.this.datasource.addMachine(nmach);
 		mAdapter.data = MainActivity.this.datasource;
 		mAdapter.notifyDataSetChanged();

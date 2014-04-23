@@ -14,6 +14,7 @@ public class Machine{
 	private String 	lastGrease;
 	private String 	lastMaintenance;
 	private String 	color;
+	private String oil_filter, trans_filter, hyd_filter, hyd_pump;
 	// TODO implement these data types
 	private long 	picture;
 	private long 	thumbnail;
@@ -24,7 +25,7 @@ public class Machine{
 	// Interval Settings
 	// Comments List
 
-	public Machine(long id, String name, String list, int year, String Purchased, String lastGrease, String lastMaintenance, String color) {
+	public Machine(long id, String name, String list, int year, String Purchased, String lastGrease, String lastMaintenance, String color, String oilfilter, String trans_filter, String hydfilter, String  hyd_pump) {
 		this.id = id;
 		this.name = name;
 		this.list = list;
@@ -33,6 +34,10 @@ public class Machine{
 		this.lastGrease = lastGrease;
 		this.lastMaintenance = lastMaintenance;
 		this.color = color;
+		this.oil_filter = oilfilter;
+		this.trans_filter = trans_filter;
+		this.hyd_filter = hydfilter;
+		this.hyd_pump = hyd_pump;
 	}
 
 	public Machine() {
@@ -51,6 +56,22 @@ public class Machine{
 		return name;
 	}
 
+	public String getoilfilter(){
+		return oil_filter;
+	}
+	
+	public String gettransfilter(){
+		return trans_filter;
+	}
+	
+	public String gethydfilter(){
+		return hyd_filter;
+	}
+	
+	public String gethydpump(){
+		return hyd_pump;
+	}
+	
 	public void setName(String name) {
 		this.name = name;
 	}

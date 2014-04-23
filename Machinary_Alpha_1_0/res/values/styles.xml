@@ -32,4 +32,6 @@
 	    <item name="hlv_transcriptMode">disabled</item>
     </style>
 
+  <!--   </style name = "MachineActivityView">
+    	<item name ="android:button" -->
 </resources>
